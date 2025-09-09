@@ -24,6 +24,7 @@ import { type CapturePhotoProps, type FormValues } from './patient-registration.
 import { type SavePatientForm, SavePatientTransactionManager } from './form-manager';
 import { useInitialAddressFieldValues, useInitialFormValues, usePatientUuidMap } from './patient-registration-hooks';
 import BeforeSavePrompt from './before-save-prompt';
+import { PatientSearchComponent } from './search/patient-search.component';
 import styles from './patient-registration.scss';
 
 let exportedInitialFormValuesForTesting = {} as FormValues;
@@ -242,6 +243,29 @@ export const PatientRegistration: React.FC<PatientRegistrationProps> = ({ savePa
               </div>
             </div>
             <div className={styles.infoGrid}>
+              <PatientSearchComponent
+                onPatientSelect={(patient) => {
+                  // Basic name splitting: first word is given, last is family.
+                  const nameParts = patient.name.trim().split(' ');
+                  const givenName = nameParts.shift() || '';
+                  const familyName = nameParts.length > 0 ? nameParts.pop() || '' : '';
+                  const middleName = nameParts.join(' ');
+
+                  props.setFieldValue('givenName', givenName);
+                  props.setFieldValue('familyName', familyName);
+                  props.setFieldValue('middleName', middleName);
+                  props.setFieldValue('gender', patient.gender);
+                  props.setFieldValue('birthdate', new Date(patient.birthDate));
+                  props.setFieldValue('patientUuid', patient.uuid);
+
+                  showSnackbar({
+                    isLowContrast: true,
+                    kind: 'success',
+                    title: t('patientDataLoaded', 'Patient Data Loaded'),
+                    subtitle: t('verifyAndComplete', 'Please verify the information and complete the registration.'),
+                  });
+                }}
+              />
               <PatientRegistrationContextProvider value={createContextValue(props)}>
                 {sections.map((section, index) => (
                   <SectionWrapper

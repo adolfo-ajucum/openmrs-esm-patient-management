@@ -1,0 +1,27 @@
+.container {
+  // Keeping it simple for now, can be themed later
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+}
+
+.formContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  align-items: flex-end; // Aligns the button with the bottom of the inputs
+
+  // The date picker needs a bit more space
+  & > div[class*='DatePicker'] {
+    grid-column: span 2;
+    @media (max-width: 768px) {
+      grid-column: span 1;
+    }
+  }
+
+  & > button {
+    // Making the button align itself nicely
+    height: 3rem;
+  }
+}

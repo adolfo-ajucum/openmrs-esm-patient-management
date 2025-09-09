@@ -115,5 +115,6 @@
   "updatePatientSuccessSnackbarSubtitle": "La información del paciente ha sido actualizada exitosamente",
   "updatePatientSuccessSnackbarTitle": "Detalles del Paciente Actualizados",
   "yearsEstimateRequired": "Los años estimados son obligatorios",
-  "yes": "Sí"
+  "yes": "Sí",
+  "searchInNationalRegistry": "Buscar en el Registro Nacional"
 }
