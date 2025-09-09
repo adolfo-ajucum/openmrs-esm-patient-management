@@ -251,6 +251,10 @@ export const PatientRegistration: React.FC<PatientRegistrationProps> = ({ savePa
                   const familyName = nameParts.length > 0 ? nameParts.pop() || '' : '';
                   const middleName = nameParts.join(' ');
 
+                  // This attribute UUID corresponds to the "is patient unknown" flag.
+                  // Setting it to 'false' ensures the name fields are visible.
+                  props.setFieldValue('attributes.8b56eac7-5c76-4b9c-8c6f-1deab8d3fc47', 'false');
+
                   props.setFieldValue('givenName', givenName);
                   props.setFieldValue('familyName', familyName);
                   props.setFieldValue('middleName', middleName);

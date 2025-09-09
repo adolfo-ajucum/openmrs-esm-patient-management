@@ -23,5 +23,14 @@
   & > button {
     // Making the button align itself nicely
     height: 3rem;
+    margin-left: 3rem;
+  }
+}
+
+.clickableRow {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e8f4ff; // A light blue hover effect
   }
 }
