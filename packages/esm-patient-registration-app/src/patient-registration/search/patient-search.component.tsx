@@ -11,12 +11,9 @@ import {
   TableHeader,
   TableBody,
   TableCell,
-  TableSelectRow,
-  DatePicker,
-  DatePickerInput,
   Pagination,
 } from '@carbon/react';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, OpenmrsDatePicker } from '@openmrs/esm-framework';
 import styles from './patient-search.scss';
 import { searchExternalPatients, type PatientSearchQuery, type PatientSearchResult } from './patient-search.resource';
 
@@ -26,7 +23,12 @@ interface PatientSearchProps {
 
 export function PatientSearchComponent({ onPatientSelect }: PatientSearchProps) {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState<PatientSearchQuery>({ dpi: '', name: '', family: '', birthdate: '' });
+  const [searchQuery, setSearchQuery] = useState<PatientSearchQuery>({
+    dpi: '',
+    name: '',
+    family: '',
+    birthdate: '',
+  });
   const [results, setResults] = useState<PatientSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef<AbortController>();
@@ -97,6 +99,13 @@ export function PatientSearchComponent({ onPatientSelect }: PatientSearchProps) 
     setSearchQuery((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleBirthdateChange = (date: Date) => {
+    setSearchQuery((prev) => ({
+      ...prev,
+      birthdate: date ? date.toISOString().split('T')[0] : '',
+    }));
+  };
+
   const onSearchClick = () => {
     setPage(1);
     handleSearch(1, pageSize);
@@ -134,31 +143,25 @@ export function PatientSearchComponent({ onPatientSelect }: PatientSearchProps) 
         <TextInput
           id="name"
           name="name"
-          labelText={t('givenName', 'Given Name')}
+          labelText={t('firstName', 'Primary Name')}
           value={searchQuery.name}
           onChange={handleInputChange}
         />
         <TextInput
           id="family"
           name="family"
-          labelText={t('familyName', 'Family Name')}
+          labelText={t('lastName', 'Surname')}
           value={searchQuery.family}
           onChange={handleInputChange}
         />
-        <DatePicker
-          datePickerType="single"
-          dateFormat="Y-m-d"
-          onChange={(dates) =>
-            setSearchQuery((prev) => ({ ...prev, birthdate: dates[0] ? dates[0].toISOString().split('T')[0] : '' }))
-          }>
-          <DatePickerInput
-            id="birthdate"
-            name="birthdate"
-            labelText={t('birthdate', 'Birth Date')}
-            placeholder="YYYY-MM-DD"
-            value={searchQuery.birthdate}
-          />
-        </DatePicker>
+        <OpenmrsDatePicker
+          id="birthdate_input"
+          data-testid="birthdate_input"
+          labelText={t('dateOfBirthLabelText', 'Date of Birth')}
+          maxDate={new Date()}
+          value={searchQuery.birthdate}
+          onChange={handleBirthdateChange}
+        />
         <Button onClick={onSearchClick} disabled={isLoading}>
           {isLoading ? t('searching', 'Searching...') : t('search', 'Search')}
         </Button>
