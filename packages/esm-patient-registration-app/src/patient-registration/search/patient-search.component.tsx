@@ -23,9 +23,10 @@ interface PatientSearchProps {
 
 export function PatientSearchComponent({ onPatientSelect }: PatientSearchProps) {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState<PatientSearchQuery>({
+  const [searchQuery, setSearchQuery] = useState({
     dpi: '',
-    name: '',
+    primerNombre: '',
+    segundoNombre: '',
     family: '',
     birthdate: '',
   });
@@ -46,16 +47,19 @@ export function PatientSearchComponent({ onPatientSelect }: PatientSearchProps) 
 
   const handleSearch = useCallback(
     (searchPage: number, searchPageSize: number) => {
-      const { dpi, name, family } = searchQuery;
+      const { dpi, primerNombre, segundoNombre, family, birthdate } = searchQuery;
       const isDpiSearch = dpi.trim().length > 0;
-      const isNameSearch = name.trim().length > 0 && family.trim().length > 0;
+      const isNameSearch = primerNombre.trim().length > 0 && family.trim().length > 0;
 
       if (!isDpiSearch && !isNameSearch) {
         showSnackbar({
           isLowContrast: true,
           kind: 'warning',
           title: t('invalidSearchCriteria', 'Invalid Search Criteria'),
-          subtitle: t('invalidSearchCriteriaSubtitle', 'Please provide a DPI, or at least a name and family name.'),
+          subtitle: t(
+            'invalidSearchCriteriaSubtitle',
+            'Please provide a DPI, or at least a first name and first surname.',
+          ),
         });
         return;
       }
@@ -64,7 +68,14 @@ export function PatientSearchComponent({ onPatientSelect }: PatientSearchProps) 
       setIsLoading(true);
       setResults([]);
 
-      searchExternalPatients(searchQuery, searchPage, searchPageSize, abortControllerRef.current)
+      const apiQuery: PatientSearchQuery = {
+        dpi,
+        name: [primerNombre, segundoNombre].filter(Boolean).join(' '),
+        family: family,
+        birthdate,
+      };
+
+      searchExternalPatients(apiQuery, searchPage, searchPageSize, abortControllerRef.current)
         .then((response) => {
           setResults(response.results);
           setTotalItems(response.total);
@@ -141,16 +152,23 @@ export function PatientSearchComponent({ onPatientSelect }: PatientSearchProps) 
           onChange={handleInputChange}
         />
         <TextInput
-          id="name"
-          name="name"
+          id="primerNombre"
+          name="primerNombre"
           labelText={t('firstName', 'Primary Name')}
-          value={searchQuery.name}
+          value={searchQuery.primerNombre}
+          onChange={handleInputChange}
+        />
+        <TextInput
+          id="segundoNombre"
+          name="segundoNombre"
+          labelText={t('secondName', 'Second Name')}
+          value={searchQuery.segundoNombre}
           onChange={handleInputChange}
         />
         <TextInput
           id="family"
           name="family"
-          labelText={t('lastName', 'Surname')}
+          labelText={t('surnames', 'Surnames')}
           value={searchQuery.family}
           onChange={handleInputChange}
         />
