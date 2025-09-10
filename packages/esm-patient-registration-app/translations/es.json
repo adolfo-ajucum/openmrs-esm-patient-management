@@ -54,6 +54,7 @@
   "familyNameRequired": "Los apellidos son obligatorios",
   "female": "Femenino",
   "fieldsWithErrors": "Los siguientes campos tienen errores:",
+  "firstName": "Primer Nombre",
   "fullNameLabelText": "Nombre Completo",
   "genderLabelText": "Sexo",
   "genderRequired": "El género es obligatorio",
@@ -76,6 +77,7 @@
   "nonCodedCauseOfDeathRequired": "La causa de muerte es obligatoria",
   "nonsensicalYears": "Los años estimados no pueden ser mayores a 140",
   "numberInNameDubious": "El número en el nombre es dudoso",
+  "lastName": "Apellido",
   "obsFieldUnknownDatatype": "El concepto para el campo de observación '{{fieldDefinitionId}}' tiene un tipo de dato desconocido '{{datatypeName}}'",
   "optional": "opcional",
   "optionalIdentifierLabel": "{{identifierName}} (opcional)",
@@ -116,5 +118,7 @@
   "updatePatientSuccessSnackbarTitle": "Detalles del Paciente Actualizados",
   "yearsEstimateRequired": "Los años estimados son obligatorios",
   "yes": "Sí",
-  "searchInNationalRegistry": "Buscar en el Registro Nacional"
+  "searchInNationalRegistry": "Buscar en el Registro Nacional",
+  "searchInNationalRegistryDescription": "Busca un paciente en el registro nacional para autocompletar el formulario.",
+  "search": "Buscar"
 }
