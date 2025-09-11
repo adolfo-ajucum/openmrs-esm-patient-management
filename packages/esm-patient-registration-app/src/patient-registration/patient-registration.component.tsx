@@ -245,22 +245,97 @@ export const PatientRegistration: React.FC<PatientRegistrationProps> = ({ savePa
             <div className={styles.infoGrid}>
               <PatientSearchComponent
                 onPatientSelect={(patient) => {
-                  // Basic name splitting: first word is given, last is family.
-                  const nameParts = patient.name.trim().split(' ');
-                  const givenName = nameParts.shift() || '';
-                  const familyName = nameParts.length > 0 ? nameParts.pop() || '' : '';
-                  const middleName = nameParts.join(' ');
+                  // Mejorar el parsing de nombres: primer nombre en given, segundo en middle, resto en family
+                  const nameParts = patient.name.trim().split(/\s+/); // Usar regex para manejar múltiples espacios
+
+                  let givenName = '';
+                  let middleName = '';
+                  let familyName = '';
+
+                  if (nameParts.length === 1) {
+                    // Solo un nombre - va a given
+                    givenName = nameParts[0];
+                  } else if (nameParts.length === 2) {
+                    // Dos nombres - primero a given, segundo a family
+                    givenName = nameParts[0];
+                    familyName = nameParts[1];
+                  } else if (nameParts.length >= 3) {
+                    // Tres o más nombres - primero a given, segundo a middle, resto a family
+                    givenName = nameParts[0];
+                    middleName = nameParts[1];
+                    familyName = nameParts.slice(2).join(' '); // Resto como apellidos
+                  }
+
+                  // Función para parsear fecha correctamente sin problemas de timezone
+                  const parseBirthDate = (dateString) => {
+                    if (!dateString) return null;
+
+                    try {
+                      // Si ya es un objeto Date, usarlo directamente
+                      if (dateString instanceof Date) {
+                        return dateString;
+                      }
+
+                      // Si es string, parsearlo manteniendo la fecha local
+                      const date = new Date(dateString);
+
+                      // Verificar si la fecha es válida
+                      if (isNaN(date.getTime())) {
+                        console.warn('Fecha inválida recibida:', dateString);
+                        return null;
+                      }
+
+                      // Para evitar problemas de timezone, crear fecha con componentes locales
+                      if (typeof dateString === 'string' && dateString.includes('T')) {
+                        // Si tiene formato ISO, extraer solo la fecha
+                        const datePart = dateString.split('T')[0];
+                        const [year, month, day] = datePart.split('-').map(Number);
+                        return new Date(year, month - 1, day); // month es 0-indexed
+                      } else if (typeof dateString === 'string' && dateString.includes('-')) {
+                        // Formato YYYY-MM-DD
+                        const [year, month, day] = dateString.split('-').map(Number);
+                        return new Date(year, month - 1, day);
+                      } else if (typeof dateString === 'string' && dateString.includes('/')) {
+                        // Formato DD/MM/YYYY o MM/DD/YYYY - asumir DD/MM/YYYY para Guatemala
+                        const parts = dateString.split('/');
+                        if (parts.length === 3) {
+                          const day = parseInt(parts[0]);
+                          const month = parseInt(parts[1]);
+                          const year = parseInt(parts[2]);
+                          return new Date(year, month - 1, day);
+                        }
+                      }
+
+                      // Como último recurso, usar el constructor Date pero ajustar timezone
+                      const parsedDate = new Date(dateString);
+                      // Ajustar por diferencia de timezone para mantener la fecha correcta
+                      const timezoneOffset = parsedDate.getTimezoneOffset() * 60000;
+                      return new Date(parsedDate.getTime() + timezoneOffset);
+                    } catch (error) {
+                      console.error('Error parseando fecha:', error, 'Fecha original:', dateString);
+                      return null;
+                    }
+                  };
 
                   // This attribute UUID corresponds to the "is patient unknown" flag.
                   // Setting it to 'false' ensures the name fields are visible.
                   props.setFieldValue('attributes.8b56eac7-5c76-4b9c-8c6f-1deab8d3fc47', 'false');
 
+                  // Establecer valores con validación
                   props.setFieldValue('givenName', givenName);
                   props.setFieldValue('familyName', familyName);
                   props.setFieldValue('middleName', middleName);
-                  props.setFieldValue('gender', patient.gender);
-                  props.setFieldValue('birthdate', new Date(patient.birthDate));
-                  props.setFieldValue('patientUuid', patient.uuid);
+                  props.setFieldValue('gender', patient.gender || '');
+
+                  // Parsear y establecer fecha de nacimiento
+                  const birthDate = parseBirthDate(patient.birthDate);
+                  if (birthDate) {
+                    props.setFieldValue('birthdate', birthDate);
+                  } else {
+                    console.warn('No se pudo establecer fecha de nacimiento para paciente:', patient);
+                  }
+
+                  props.setFieldValue('patientUuid', patient.uuid || '');
 
                   showSnackbar({
                     isLowContrast: true,
