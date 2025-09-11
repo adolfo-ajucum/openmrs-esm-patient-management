@@ -67,6 +67,8 @@
   "invalidEmail": "Email inválido",
   "invalidInput": "Entrada inválida",
   "isDeadInputLabel": "Fallecido",
+  "invalidSearchCriteria": "Criterios de búsqueda inválidos",
+  "invalidSearchCriteriaSubtitle": "Por favor proporcione un DPI, o al menos un nombre y apellidos.",
   "jumpTo": "Saltar a",
   "male": "Masculino",
   "middleNameLabelText": "Segundo Nombre",
@@ -120,5 +122,11 @@
   "yes": "Sí",
   "searchInNationalRegistry": "Buscar en el Registro Nacional",
   "searchInNationalRegistryDescription": "Busca un paciente en el registro nacional para autocompletar el formulario.",
-  "search": "Buscar"
+  "search": "Buscar",
+  "secondName": "Segundo Nombre",
+  "searching": "Buscando...",
+  "surnames": "Apellidos",
+  "patientDataLoaded": "Datos del Paciente Cargados",
+  "verifyAndComplete": "Por favor verifique la información y complete el registro."
+
 }
